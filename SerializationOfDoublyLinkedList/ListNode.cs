@@ -14,7 +14,7 @@ namespace SerializationOfDoublyLinkedList
         /// <summary>
         /// Previous element
         /// </summary>
-        public ListNode? Previous {get; set; }
+        public ListNode Previous {get; set; }
 
         /// <summary>
         /// Next element
@@ -31,11 +31,5 @@ namespace SerializationOfDoublyLinkedList
         /// Content
         /// </summary>
         public string Data { get; set; }
-
-        public ListNode(string data)
-        {
-            Data = data;
-        }
-
     }
 }
