@@ -72,6 +72,17 @@ namespace SerializationOfDoublyLinkedList
             Count++;
         }
 
+        //void RandomShuffle(ListRandom list)
+        //{
+        //    ListNode node = list.Head;
+        //    for (int i = 0; i < Count; ++i)
+        //    {
+        //        ListNode randomNode = list.GetNode(Random(0, Count - 1));
+        //    node.SetRandomNode(randomNode);
+        //        node = node.Next;
+        //    }
+        //}
+
         /// <summary>
         /// 
         /// </summary>
@@ -116,7 +127,7 @@ namespace SerializationOfDoublyLinkedList
         /// <summary>
         /// Serializes a doubly linked list
         /// </summary>
-        public void Serialize(Stream s)
+        public void Serialize (Stream s)
         {
             List<ListNode> listNodes = new List<ListNode>();
 
@@ -125,11 +136,11 @@ namespace SerializationOfDoublyLinkedList
                 listNodes.Add(currentNode);
             }
 
-            using (StreamWriter streamwriter = new StreamWriter(s))
+            using (StreamWriter streamWriter = new StreamWriter(s))
             {
                 for (ListNode currentNode = Head; currentNode != null; currentNode = currentNode.Next)
                 {
-                    streamwriter.WriteLine(currentNode.Data + ":" + listNodes.IndexOf(currentNode.Random).ToString());
+                    streamWriter.WriteLine(currentNode.Data + ":" + listNodes.IndexOf(currentNode.Random).ToString());
 
                     Console.WriteLine(listNodes.IndexOf(currentNode.Random).ToString());
                 }
@@ -173,7 +184,6 @@ namespace SerializationOfDoublyLinkedList
             }
 
             AddRandomNodeAtDeserialize(listNodesRandomNumbers);
-
         }
 
     }

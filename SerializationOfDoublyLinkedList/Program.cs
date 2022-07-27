@@ -16,7 +16,7 @@ Console.WriteLine("3.Random: " + list.Head.Next.Next.Random.Data);
 Console.WriteLine("4.Random: " + list.Head.Next.Next.Next.Random.Data);
 Console.WriteLine("5.Random: " + list.Head.Next.Next.Next.Next.Random.Data);
 
-FileStream fs = new FileStream(@"C:\Users\riqvade\Desktop\ser\dat.txt", FileMode.Create);
+FileStream fs = new FileStream(@"C:\Users\riqvade\Desktop\ser\data.txt", FileMode.Create);
 list.Serialize(fs);
 
 
@@ -24,7 +24,7 @@ ListRandom list2 = new ListRandom();
 
 try
 {
-    fs = new FileStream(@"C:\Users\riqvade\Desktop\ser\dat.txt", FileMode.Open);
+    fs = new FileStream(@"C:\Users\riqvade\Desktop\ser\data.txt", FileMode.Open);
 }
 catch (Exception e)
 {
