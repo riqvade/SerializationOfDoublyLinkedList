@@ -28,6 +28,8 @@ namespace SerializationOfDoublyLinkedList
         /// </summary>
         public int Count { get; set; }
 
+        private static Random _random = new Random();
+
 
         /// <summary>
         /// Adds a new element to a doubly linked list
@@ -46,6 +48,24 @@ namespace SerializationOfDoublyLinkedList
             {
                 Tail.Next = node;
                 node.Previous = Tail;
+
+                ////////////////////////////////////////////////////
+
+                int randomNodeNumber = _random.Next(0, Count - 1);
+                ListNode currentNode = Head;
+
+                for (int i = 0; i < Count; i++)
+                {
+                    if (randomNodeNumber == i)
+                    {
+                        node.Random = currentNode.Random;
+
+                        currentNode.Random = currentNode.Random.Random;
+
+                        node.Random.Random = node;
+                    }
+                    currentNode = currentNode.Next;
+                }
             }
 
             Tail = node;

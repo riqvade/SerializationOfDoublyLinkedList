@@ -8,7 +8,7 @@ list.AddNode("second");
 list.AddNode("third");
 list.AddNode("fourth");
 
-list.AddRandomNode();
+//list.AddRandomNode();
 
 Console.WriteLine("1.Random: " + list.Head.Random.Data);
 Console.WriteLine("2.Random: " + list.Head.Next.Random.Data);
