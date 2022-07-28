@@ -1,5 +1,4 @@
-﻿using SerializationOfDoublyLinkedList.Helpers;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,11 +27,8 @@ namespace SerializationOfDoublyLinkedList
         /// </summary>
         public int Count { get; set; }
 
-        private static Random _random = new Random();
-
-
         /// <summary>
-        /// Adds a new element to a doubly linked list
+        /// Adds a new element
         /// </summary>
         public void AddNode(string data)
         {
@@ -40,112 +36,130 @@ namespace SerializationOfDoublyLinkedList
             node.Data = data;
 
             if (Head == null)
-            { 
+            {
                 Head = node;
-                Head.Random = Head; // что бы значение небыло null
+                Tail = node;
             }
             else
             {
                 Tail.Next = node;
                 node.Previous = Tail;
-
-                ////////////////////////////////////////////////////
-
-                int randomNodeNumber = _random.Next(0, Count - 1);
-                ListNode currentNode = Head;
-
-                for (int i = 0; i < Count; i++)
-                {
-                    if (randomNodeNumber == i)
-                    {
-                        node.Random = currentNode.Random;
-
-                        currentNode.Random = currentNode.Random.Random;
-
-                        node.Random.Random = node;
-                    }
-                    currentNode = currentNode.Next;
-                }
+                Tail = node;
             }
-
-            Tail = node;
             Count++;
         }
 
-        //void RandomShuffle(ListRandom list)
-        //{
-        //    ListNode node = list.Head;
-        //    for (int i = 0; i < Count; ++i)
-        //    {
-        //        ListNode randomNode = list.GetNode(Random(0, Count - 1));
-        //    node.SetRandomNode(randomNode);
-        //        node = node.Next;
-        //    }
-        //}
-
         /// <summary>
-        /// 
+        /// Sets random elements in nodes
         /// </summary>
-        public void AddRandomNode()
+        public void RandomShuffle()
         {
-            List<ListNode> listNode = new List<ListNode>();
-            for (ListNode currentNode = Head; currentNode != null; currentNode = currentNode.Next)
+            Random random = new Random();
+
+            if (Count == 0)
             {
-                listNode.Add(currentNode);
+                Console.WriteLine("List is empty");
             }
-
-            ListStirrer.Shuffle(listNode);
-
-            int i = 0;
-            for (ListNode currentNode = Head; currentNode != null; currentNode = currentNode.Next)
+            else
             {
-                currentNode.Random = listNode[i];
-                i++;
+                ListNode curNode = Head;
+                while (curNode != null)
+                {
+                    curNode.Random = GetNode(random.Next(0, Count - 1));
+                    curNode = curNode.Next;
+                }
             }
         }
 
         /// <summary>
-        /// 
+        /// Return node
         /// </summary>
-        private void AddRandomNodeAtDeserialize(List<int> listNodesRandomNumbers)
+        private ListNode GetNode(int number)
         {
-            List<ListNode> listNode = new List<ListNode>();
-            for (ListNode currentNode = Head; currentNode != null; currentNode = currentNode.Next)
+            if (Count == 0)
             {
-                listNode.Add(currentNode);
+                Console.WriteLine("List is empty");
+
+                return null;
             }
-
-            ListNode currentNode1 = Head;
-            for (int i = 0; i < listNodesRandomNumbers.Count; i++)
+            else
             {
-                currentNode1.Random = listNode[listNodesRandomNumbers[i]];
+                if (number < Count)
+                {
+                    ListNode curNode = Head;
+                    while (number != 0)
+                    {
+                        curNode = curNode.Next;
+                        number--;
+                    }
 
-                currentNode1 = currentNode1.Next;
+                    return curNode;
+                }
+                else
+                {
+                    Console.WriteLine("List have not node with number " + number.ToString());
+
+                    return null;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Return Index Of node
+        /// </summary>
+        public int GetIndexOfNode(ListNode node)
+        {
+            int index = 0;
+
+            if (Count == 0)
+            {
+                Console.WriteLine("List is empty");
+
+                return -1;
+            }
+            else
+            {
+                ListNode curNode = Head;
+                while ((curNode != node) && (curNode != null))
+                {
+                    curNode = curNode.Next;
+
+                    index++;
+                }
+
+                return index;
             }
         }
 
         /// <summary>
         /// Serializes a doubly linked list
         /// </summary>
-        public void Serialize (Stream s)
+        public void Serialize(Stream s)
         {
-            List<ListNode> listNodes = new List<ListNode>();
-
-            for (ListNode currentNode = Head; currentNode != null; currentNode = currentNode.Next)
+            try
             {
-                listNodes.Add(currentNode);
-            }
-
-            using (StreamWriter streamWriter = new StreamWriter(s))
-            {
-                for (ListNode currentNode = Head; currentNode != null; currentNode = currentNode.Next)
+                using (StreamWriter streamwriter = new StreamWriter(s))
                 {
-                    streamWriter.WriteLine(currentNode.Data + ":" + listNodes.IndexOf(currentNode.Random).ToString());
-
-                    Console.WriteLine(listNodes.IndexOf(currentNode.Random).ToString());
+                    ListNode curNode = Head;
+                    while (curNode != null)
+                    {
+                        int randomNodeNumber = GetIndexOfNode(curNode.Random);
+                        streamwriter.WriteLine(curNode.Data + ":" + randomNodeNumber.ToString());
+                        curNode = curNode.Next;
+                    }
                 }
+                Console.WriteLine("List serialized");
+                Console.WriteLine();
             }
-            Console.WriteLine("List serialized");
+            catch (Exception ex)
+            {
+                Console.WriteLine("Failed to process data file, possibly corrupted, details:");
+                Console.WriteLine(ex.Message);
+                Console.WriteLine("Press Enter to exit.");
+                Console.Read();
+                Environment.Exit(0);
+            }
+            
         }
 
         /// <summary>
@@ -153,38 +167,34 @@ namespace SerializationOfDoublyLinkedList
         /// </summary>
         public void Deserialize(Stream s)
         {
-            List<string> listNodesData = new List<string>();
-
-            List<int> listNodesRandomNumbers = new List<int>();
-
             string contentOfLine;
+            List<int> randomNumbers = new List<int>();
             try
             {
                 using (StreamReader streamReader = new StreamReader(s))
                 {
                     while ((contentOfLine = streamReader.ReadLine()) != null)
                     {
-                        listNodesData.Add(contentOfLine.Split(':')[0]);
-                        listNodesRandomNumbers.Add(Convert.ToInt32(contentOfLine.Split(':')[1]));
+                        AddNode(contentOfLine.Split(':')[0]);
+                        randomNumbers.Add(Convert.ToInt32(contentOfLine.Split(':')[1]));
                     }
                 }
+                ListNode curNode = Head;
+                for (int i = 0; i < Count; i++)
+                {
+                    curNode.Random = GetNode(randomNumbers[i]);
+                    curNode = curNode.Next;
+                }
+                Console.WriteLine("List deserialized");
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Не удалось обработать файл данных, возможно, он поврежден, подробности:");
+                Console.WriteLine("Failed to process data file, possibly corrupted, details:");
                 Console.WriteLine(ex.Message);
                 Console.WriteLine("Press Enter to exit.");
                 Console.Read();
                 Environment.Exit(0);
             }
-
-            for (int i = 0; i < listNodesData.Count; i++)
-            {
-                AddNode(listNodesData[i]);
-            }
-
-            AddRandomNodeAtDeserialize(listNodesRandomNumbers);
         }
-
     }
 }
