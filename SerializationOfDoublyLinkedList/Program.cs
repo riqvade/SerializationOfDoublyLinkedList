@@ -28,7 +28,7 @@ for (int i = 0; i < list.Count; i++)
 FileStream fs = null;
 try
 {
-    fs = new FileStream("dat.txt", FileMode.Create);
+    fs = new FileStream(@"C:\Users\Gleb\Desktop\ser\dat.txt", FileMode.Create);
 }
 catch (Exception e)
 {
@@ -42,7 +42,7 @@ list.Serialize(fs);
 
 try
 {
-    fs = new FileStream("dat.txt", FileMode.Open);
+    fs = new FileStream(@"C:\Users\Gleb\Desktop\ser\dat.txt", FileMode.Open);
 }
 catch (Exception e)
 {

@@ -136,6 +136,8 @@ namespace SerializationOfDoublyLinkedList
         /// </summary>
         public void Serialize(Stream s)
         {
+            byte[] bytes = null;
+
             try
             {
                 using (StreamWriter streamwriter = new StreamWriter(s))
@@ -144,7 +146,13 @@ namespace SerializationOfDoublyLinkedList
                     while (curNode != null)
                     {
                         int randomNodeNumber = GetIndexOfNode(curNode.Random);
-                        streamwriter.WriteLine(curNode.Data + ":" + randomNodeNumber.ToString());
+
+                        bytes = Encoding.Default.GetBytes(curNode.Data);
+
+                        streamwriter.WriteLine(String.Join(" ", bytes));
+                        streamwriter.WriteLine(randomNodeNumber.ToString());
+
+
                         curNode = curNode.Next;
                     }
                 }
@@ -159,7 +167,7 @@ namespace SerializationOfDoublyLinkedList
                 Console.Read();
                 Environment.Exit(0);
             }
-            
+
         }
 
         /// <summary>
@@ -168,6 +176,8 @@ namespace SerializationOfDoublyLinkedList
         public void Deserialize(Stream s)
         {
             string contentOfLine;
+            string[] elements = null;
+            bool isNode = true;
             List<int> randomNumbers = new List<int>();
             try
             {
@@ -175,8 +185,23 @@ namespace SerializationOfDoublyLinkedList
                 {
                     while ((contentOfLine = streamReader.ReadLine()) != null)
                     {
-                        AddNode(contentOfLine.Split(':')[0]);
-                        randomNumbers.Add(Convert.ToInt32(contentOfLine.Split(':')[1]));
+                        if (isNode == true)
+                        {
+                            elements = contentOfLine.Split(' ');
+                            byte[] bytes = new byte[elements.Length];
+
+                            for (int i = 0; i < elements.Length; i++)
+                            {
+                                bytes[i] = Byte.Parse(elements[i]);
+                            }
+                            AddNode(Encoding.Default.GetString(bytes));
+                            isNode = false;
+                        }
+                        else
+                        {
+                            randomNumbers.Add(Convert.ToInt32(contentOfLine));
+                            isNode = true;
+                        }
                     }
                 }
                 ListNode curNode = Head;
